@@ -231,8 +231,7 @@ MonoBehaviour:
   speed: 5000
   damage: 1
   shooter: {fileID: 0}
-  maxRange: 500
-  distance: 0
+  maxRange: 200
 --- !u!1 &4551442589481947081
 GameObject:
   m_ObjectHideFlags: 0

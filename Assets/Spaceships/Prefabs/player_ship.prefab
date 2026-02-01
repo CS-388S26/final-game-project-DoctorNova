@@ -373,8 +373,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 939967657b7f6694a9e23ed07e28e18c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectPrefab: {fileID: 3152333922911128755, guid: 58921ade8f5f70445936c31c420e21f9, type: 3}
-  location: {fileID: 8639865083155007969}
+  projectilePrefab: {fileID: 3152333922911128755, guid: 58921ade8f5f70445936c31c420e21f9, type: 3}
+  locations:
+  - {fileID: 8639865083155007969}
   reloadTime: 0.25
 --- !u!114 &6029283205969051217
 MonoBehaviour:
@@ -401,7 +402,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1adeb41cacc9ee4db6b285e5adaab57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 10
+  health: 100
+  hud: {fileID: 0}
 --- !u!54 &419124555909411415
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -441,7 +443,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00ad2a20c75cc5c45a2b9f946800d002, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 10000
-  acceleration: 10
-  minSpeed: 0
+  maxSpeed: 10
+  acceleration: 5
   speed: 0
+  rb: {fileID: 0}
+  desiredPosition: {x: 0, y: 0, z: 0}
+  minSpeed: 3
