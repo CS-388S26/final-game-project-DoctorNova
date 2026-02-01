@@ -7,7 +7,7 @@ public class SpaceshipSpawner : MonoBehaviour
     public int count = 10;
     public GameObject spaceshipPrefab;
 
-    IEnumerator SpawnAll() { 
+    public IEnumerator SpawnAll() { 
         for (int i = 0; i < count; i++)
         {
             Vector3 spawnerPosition = transform.position;
@@ -19,10 +19,5 @@ public class SpaceshipSpawner : MonoBehaviour
         count = 0;
 
         yield return null;
-    }
-
-    private void Start()
-    {
-        StartCoroutine(SpawnAll());
     }
 }

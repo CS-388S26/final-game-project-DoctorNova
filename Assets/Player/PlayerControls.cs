@@ -1,15 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerControls : FighterAI
 {
+    public HUD hud;
     Quaternion gyroOffset;
     bool calibrated = false;
 
     public FighterAI target;
+
+    float timeBeforePlayerCanWin = 10f;
 
     [SerializeField]
     int minSpeed = 0;
@@ -28,13 +33,25 @@ public class PlayerControls : FighterAI
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!GameManager.IsGameReady())
+        if (!LoadingScreen.IsGameReady())
             return;
 
         RotateWithPCControls();
         RotateWithMobileControls();
 
         rb.velocity = transform.forward.normalized * speed * Time.fixedDeltaTime;
+
+        timeBeforePlayerCanWin -= Time.fixedDeltaTime;
+
+        if (timeBeforePlayerCanWin < 0 && GetEnemyTeam().Count == 0)
+        {
+            hud.Won();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        hud.Defeat();
     }
 
     void RotateWithPCControls()

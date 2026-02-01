@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class HUD : MonoBehaviour
@@ -15,9 +15,12 @@ public class HUD : MonoBehaviour
     public Image crosshairOutline;
     public Image crosshairTarget;
     public Image crosshairNoTarget;
-
-    public TextMeshProUGUI readToFire;
-    public TextMeshProUGUI reloading;
+    public Canvas canvas;
+    public Image enemyArrow;
+    public float arrowPadding = 0.1f;
+    public GameObject pauseMenu;
+    public GameObject continueBtn;
+    public TextMeshProUGUI pauseMenuTitle;
 
     Vector2 targetScreenCoordinate = new Vector2(0, 0);
 
@@ -25,15 +28,106 @@ public class HUD : MonoBehaviour
     float minTargetDetectionInterval = 0.1f;
     float timeSinceLastTargetCheck = 0;
 
+    float minTargetOffscreenUpdateInterval = 0.25f;
+    float timeTargetOffscreenUpdate = 0;
+
+
+    private void Start()
+    {
+        enemyArrow.gameObject.SetActive(false);
+        pauseMenu.SetActive(false);
+    }
+
     private bool IsPointInCircle(Vector3 point, Vector3 circleCenter, float radius)
     {
         Vector3 distance = point - circleCenter;
         return distance.sqrMagnitude < radius * radius;
     }
 
-    private void Start()
+    void UpdateIndicators()
     {
+        var enemies = playerFighter.GetEnemyTeam();
+        RectTransform arrowRect = enemyArrow.rectTransform;
+        bool arrowSet = false;
 
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            Transform t = enemies[i].transform;
+            Vector3 vp = mainCamera.WorldToViewportPoint(t.position);
+
+            // Off-screen check
+            if (vp.z > 0 && vp.x >= 0 && vp.x <= 1 && vp.y >= 0 && vp.y <= 1)
+                continue; // on-screen, skip
+
+            // Fix behind-camera
+            if (vp.z < 0)
+            {
+                vp.x = 1f - vp.x;
+                vp.y = 1f - vp.y;
+                vp.z = 0f;
+            }
+
+            // Clamp to screen edges
+            float pad = arrowPadding;
+            vp.x = Mathf.Clamp(vp.x, pad, 1f - pad);
+            vp.y = Mathf.Clamp(vp.y, pad, 1f - pad);
+
+            // Set position
+            arrowRect.position = mainCamera.ViewportToScreenPoint(vp);
+
+            // Set rotation
+            Vector2 dir = new Vector2(vp.x - 0.5f, vp.y - 0.5f);
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            arrowRect.rotation = Quaternion.Euler(0f, 0f, angle - 90f);
+
+            arrowSet = true;
+            break; // only show first off-screen enemy
+        }
+
+        enemyArrow.gameObject.SetActive(arrowSet);
+    }
+
+    public void PauseGame()
+    {
+        if (!pauseMenu)
+            return;
+
+        Time.timeScale = 0f;          // stop all physics, animations, and Update() calls that use Time.deltaTime
+        pauseMenu.SetActive(true);    // show pause menu UI
+        pauseMenuTitle.text = "Paused";
+    }
+
+    public void ResumeGame()
+    {
+        Time.timeScale = 1f;          // resume normal time
+        pauseMenu.SetActive(false);   // hide pause menu UI
+    }
+
+    public void Restart()
+    {
+        SceneManager.LoadScene("GameScene");
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
+    }
+
+    public void Won()
+    {
+        PauseGame();
+        continueBtn.SetActive(false);
+        pauseMenuTitle.text = "Victory";
+    }
+
+    public void Defeat()
+    {
+        if (!pauseMenu)
+            return;
+
+        PauseGame();
+        continueBtn.SetActive(false);
+        pauseMenuTitle.text = "Defeat";
     }
 
     private void CheckForTargetsInCrosshair()
@@ -41,12 +135,12 @@ public class HUD : MonoBehaviour
         playerFighter.target = null;
         float distance = float.MaxValue;
         Vector3 screenCoordinate = new Vector3(0, 0, 0);
+        RectTransform canvasRect = canvas.GetComponent<RectTransform>();
 
         foreach (FighterAI fighter in playerFighter.GetEnemyTeam())
         {
             Vector3 direction = fighter.transform.position - playerFighter.transform.position;
             float newDistance = direction.sqrMagnitude;
-
             if (newDistance > maxTargetRangeSq || Vector3.Dot(direction.normalized, playerFighter.transform.forward) <= 0)
             {
                 continue;
@@ -79,6 +173,12 @@ public class HUD : MonoBehaviour
 
     private void Update()
     {
+        timeTargetOffscreenUpdate += Time.deltaTime;
+        if (timeTargetOffscreenUpdate > minTargetOffscreenUpdateInterval)
+        {
+            timeTargetOffscreenUpdate = 0;
+            UpdateIndicators();
+        }
 
         // Don't need to check on every frame
         timeSinceLastTargetCheck += Time.deltaTime;
@@ -99,10 +199,6 @@ public class HUD : MonoBehaviour
             crosshairTarget.gameObject.SetActive(false);
             crosshairNoTarget.gameObject.SetActive(true);  
         }
-
-        bool isReloading = playerFighter.gun.lastTimeShot < playerFighter.gun.reloadTime;
-        reloading.gameObject.SetActive(isReloading);
-        readToFire.gameObject.SetActive(!isReloading);
     }
 
     public void SetHP(float current, float max)

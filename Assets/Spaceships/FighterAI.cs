@@ -60,7 +60,7 @@ public class FighterAI : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!GameManager.IsGameReady())
+        if (!LoadingScreen.IsGameReady())
             return;
 
         Vector3 newDirection = Vector3.Lerp(rb.velocity.normalized, desiredDirection, acceleration * Time.fixedDeltaTime);
