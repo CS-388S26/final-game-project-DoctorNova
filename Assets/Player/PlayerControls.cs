@@ -21,7 +21,6 @@ public class PlayerControls : FighterAI
     {
         Input.gyro.enabled = true;
         gun = GetComponentInChildren<SpaceshipGun>();
-        rb = GetComponent<Rigidbody>();
 
         speed = minSpeed;
     }
@@ -29,6 +28,9 @@ public class PlayerControls : FighterAI
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (!GameManager.IsGameReady())
+            return;
+
         RotateWithPCControls();
         RotateWithMobileControls();
 

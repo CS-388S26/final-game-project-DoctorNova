@@ -4,32 +4,29 @@ using UnityEngine;
 
 public class FighterAI : MonoBehaviour
 {
-    protected static List<FighterAI> allFighters = new List<FighterAI>();
-    protected static List<FighterAI>[] teams = new List<FighterAI>[2]{
+    public static List<FighterAI> allFighters = new List<FighterAI>();
+    public static List<FighterAI>[] teams = new List<FighterAI>[2]{
         new List<FighterAI>(),
         new List<FighterAI>()
     };
 
     public int maxSpeed = 2000;
     public float acceleration = 100;
+    public float turnSpeed = 100;
+
+    // speed is for debugging
     public float speed = 0;
 
     public Rigidbody rb;
-    protected int enemyDetectionRange = 100;
-    protected int enemyDetectionRangeSq = 0;
-    public Vector3 desiredPosition = new Vector3();
+    public Vector3 desiredDirection = Vector3.zero; 
+    public SpaceshipShield shield;
 
-    float lastTimeTargetUpdated = 0;
-    float minTimeSinceTargetUpdate = 1;
+    public bool useBoidMovement = true;
 
-
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        enemyDetectionRangeSq = enemyDetectionRange * enemyDetectionRange;
-
-        lastTimeTargetUpdated = minTimeSinceTargetUpdate;
+        shield = GetComponentInChildren<SpaceshipShield>();
     }
 
     public List<FighterAI> GetTeam()
@@ -59,59 +56,20 @@ public class FighterAI : MonoBehaviour
         GetTeam().Remove(this);
     }
 
-    FighterAI FindClosestEnemy()
-    {
-        float closestDistance = enemyDetectionRangeSq;
-        FighterAI closest = null;
-
-        List<FighterAI> enemies = GetEnemyTeam();
-        foreach (FighterAI enemy in enemies)
-        {
-            Vector3 distance = enemy.transform.position - rb.position;
-            if (distance.sqrMagnitude < closestDistance)
-            {
-                closest = enemy;
-            }
-        }
-
-        return closest;
-    }
-
     // Update is called once per frame
     void FixedUpdate()
     {
-        // Don't update the desired destination every frame.
-        lastTimeTargetUpdated += Time.fixedDeltaTime;
-        if (lastTimeTargetUpdated >= minTimeSinceTargetUpdate)
+        if (!GameManager.IsGameReady())
+            return;
+
+        Vector3 newDirection = Vector3.Lerp(rb.velocity.normalized, desiredDirection, acceleration * Time.fixedDeltaTime);
+        rb.velocity = newDirection * maxSpeed;
+
+        if (newDirection.sqrMagnitude > 0.001f)
         {
-            lastTimeTargetUpdated = 0;
-            FighterAI closestEnemy = FindClosestEnemy();
-            if (closestEnemy)
-            {
-                desiredPosition = closestEnemy.transform.position - closestEnemy.transform.forward.normalized * 2;
-            }
-        }
-
-        Vector3 direction = desiredPosition - transform.position;
-        float currentSpeed = Mathf.Lerp(speed, maxSpeed, acceleration * Time.fixedDeltaTime);
-        Vector3 desiredVelocity = direction.normalized * currentSpeed;
-
-        rb.velocity = desiredVelocity;
-
-        // Stop moving if very close to the target destination
-        // This should not happens outside of debugging because every ship is moving
-        if (direction.sqrMagnitude <= 1)
-        {
-            rb.velocity = new Vector3(0, 0, 0);
-        }
-
-        if (rb.velocity.sqrMagnitude > 0)
-        {
-            transform.LookAt(transform.position + rb.velocity.normalized);
-            rb.velocity = Orca.ComputeSafeVelocity(new OrcaParams(), Time.fixedDeltaTime, this, allFighters);
+            transform.LookAt(transform.position + newDirection);
         }
 
         speed = rb.velocity.magnitude;
-
     }
 }

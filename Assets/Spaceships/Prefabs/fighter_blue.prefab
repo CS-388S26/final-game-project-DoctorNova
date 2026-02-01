@@ -429,11 +429,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c56f3f29a1c35704f8b91b94553c449d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 5
-  acceleration: 1
+  maxSpeed: 10
+  acceleration: 2
+  turnSpeed: 100
   speed: 0
   rb: {fileID: 0}
-  desiredPosition: {x: 0, y: 0, z: 0}
+  desiredDirection: {x: 0, y: 0, z: 0}
+  shield: {fileID: 0}
+  useBoidMovement: 1
 --- !u!114 &6265316380432309071
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -451,6 +454,7 @@ MonoBehaviour:
   - {fileID: 6048639236530893760}
   - {fileID: 8747158911971732912}
   reloadTime: 0.5
+  lastTimeShot: 0
 --- !u!4 &3074682224449766090 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9caa9e853419a304da0d5fdd52a9a893, type: 3}

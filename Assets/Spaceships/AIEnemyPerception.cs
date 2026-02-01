@@ -8,7 +8,7 @@ public class AIEnemyPerception : MonoBehaviour
     SpaceshipGun gun;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         fighter = GetComponentInParent<FighterAI>();
         gun = GetComponentInParent<SpaceshipGun>();

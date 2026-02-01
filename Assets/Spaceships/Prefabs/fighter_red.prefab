@@ -407,11 +407,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c56f3f29a1c35704f8b91b94553c449d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 5
-  acceleration: 1
+  maxSpeed: 10
+  acceleration: 2
+  turnSpeed: 100
   speed: 0
   rb: {fileID: 0}
-  desiredPosition: {x: 0, y: 0, z: 0}
+  desiredDirection: {x: 0, y: 0, z: 0}
+  shield: {fileID: 0}
+  useBoidMovement: 1
 --- !u!114 &2381243999152144523
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -456,3 +459,4 @@ MonoBehaviour:
   - {fileID: 5065142110920612073}
   - {fileID: 2217165256140004178}
   reloadTime: 0.5
+  lastTimeShot: 0
