@@ -9,6 +9,7 @@ public class Projectile : MonoBehaviour
     public GameObject shooter;
 
     public float maxRange = 1000;
+    public FighterAI target = null;
 
     Rigidbody rb;
     Vector3 startPosition;
@@ -25,6 +26,11 @@ public class Projectile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (target)
+        {
+            transform.LookAt(target.transform.position);
+        }
+
         rb.velocity = this.transform.forward.normalized * Time.deltaTime * speed;
 
         if ((transform.position - startPosition).sqrMagnitude > maxRangeSq)

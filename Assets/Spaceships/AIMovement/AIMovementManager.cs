@@ -9,6 +9,7 @@ public class AIMovementManager : MonoBehaviour
     public float separationCoefficient = 0.5f;
     public float alignmentCoefficient = 0.2f;
     public float enemyCoefficient = 0.3f;
+    public float anchorCoefficient = 0.05f;
     public float separationDistance = 10f;
     public float maxConsiderationDistance = 50f;
 
@@ -17,6 +18,7 @@ public class AIMovementManager : MonoBehaviour
     private AlignmentCalculator alignmentCalculator;
     private ClosestEnemyCalculator closestEnemyCalculator;
 
+    public Vector3 anchorPoint = Vector3.zero;
     private const int maxAgentsPerFrame = 100;
 
     private void Start()
@@ -89,7 +91,8 @@ public class AIMovementManager : MonoBehaviour
                     Vector3 separationForce = separationCalculator.CalculateResult(separationCoefficient);
                     Vector3 cohesionForce = cohesionCalculator.CalculateResult(cohesionCoefficient);
                     Vector3 alignmentForce = alignmentCalculator.CalculateResult(alignmentCoefficient);
-                    Vector3 finalForce = cohesionForce + alignmentForce + separationForce + closestEnemyForce;
+                    Vector3 anchorForce = anchorPoint - agent.transform.position.normalized * anchorCoefficient;
+                    Vector3 finalForce = anchorForce + cohesionForce + alignmentForce + separationForce + closestEnemyForce;
 
                     // --- APPLY TO AGENT ---
                     agent.desiredDirection = finalForce.normalized;

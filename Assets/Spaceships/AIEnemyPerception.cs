@@ -18,7 +18,7 @@ public class AIEnemyPerception : MonoBehaviour
     {
         if (fighter.IsEnemy(other.gameObject))
         {
-            gun.ShootAt(other.gameObject);
+            gun.ShootAt(other.gameObject.transform.position);
         }
     }
 }

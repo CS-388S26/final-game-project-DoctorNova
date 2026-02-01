@@ -85,7 +85,7 @@ public class PlayerControls : FighterAI
         {
             if (target)
             {
-                gun.ShootAt(target.transform.position);
+                gun.ShootAt(target);
             }
             else
             {

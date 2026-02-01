@@ -2,7 +2,7 @@
 - Project name: Assignment1
 - Unity version: Unity 2022.3.62f3
 - Active game object:
-  - Name: player
+  - Name: ProjectileBlue
   - Tag: Untagged
-  - Layer: BlueShip
+  - Layer: BlueLaser
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->

@@ -51,12 +51,12 @@ public class SpaceshipGun : MonoBehaviour
         return projectileComp;
     }
 
-    public void ShootAt(GameObject obj)
+    public void ShootAt(FighterAI obj)
     {
         Projectile projectile = Shoot();
         if (projectile)
         {
-            projectile.transform.LookAt(obj.transform.position);
+            projectile.target = obj;
         }
     }
 
