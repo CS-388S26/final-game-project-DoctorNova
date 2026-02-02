@@ -445,7 +445,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 6
-  acceleration: 2
+  acceleration: 1
   speed: 0
   rb: {fileID: 0}
   desiredDirection: {x: 0, y: 0, z: 0}
