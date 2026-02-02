@@ -11,9 +11,8 @@ public class FighterAI : MonoBehaviour
         new List<FighterAI>()
     };
 
-    public int maxSpeed = 2000;
-    public float acceleration = 100;
-    public float turnSpeed = 100;
+    public float maxSpeed = 5.5f;
+    public float acceleration = 2;
 
     // speed is for debugging
     public float speed = 0;
@@ -24,7 +23,7 @@ public class FighterAI : MonoBehaviour
 
     public bool useBoidMovement = true;
 
-    private void Awake()
+    protected void Awake()
     {
         rb = GetComponent<Rigidbody>();
         shield = GetComponentInChildren<SpaceshipShield>();
@@ -72,5 +71,10 @@ public class FighterAI : MonoBehaviour
         }
 
         speed = rb.velocity.magnitude;
+    }
+
+    public void OnShieldDestroyed()
+    {
+        Destroy(gameObject);
     }
 }

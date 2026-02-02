@@ -21,6 +21,7 @@ public class HUD : MonoBehaviour
     public GameObject pauseMenu;
     public GameObject continueBtn;
     public TextMeshProUGUI pauseMenuTitle;
+    public TextMeshProUGUI enemyCounter;
 
     Vector2 targetScreenCoordinate = new Vector2(0, 0);
 
@@ -31,11 +32,11 @@ public class HUD : MonoBehaviour
     float minTargetOffscreenUpdateInterval = 0.25f;
     float timeTargetOffscreenUpdate = 0;
 
-
     private void Start()
     {
         enemyArrow.gameObject.SetActive(false);
         pauseMenu.SetActive(false);
+        SetHP(1, 1);
     }
 
     private bool IsPointInCircle(Vector3 point, Vector3 circleCenter, float radius)
@@ -147,7 +148,7 @@ public class HUD : MonoBehaviour
             }
 
             Vector3 screenPosition = Camera.main.WorldToScreenPoint(fighter.transform.position);
-            if (!IsPointInCircle(screenPosition, crosshairOutline.rectTransform.position, crosshairOutline.rectTransform.rect.width))
+            if (!IsPointInCircle(screenPosition, crosshairOutline.rectTransform.position, crosshairOutline.rectTransform.rect.width / 3))
             {
                 continue;
             }
@@ -199,6 +200,8 @@ public class HUD : MonoBehaviour
             crosshairTarget.gameObject.SetActive(false);
             crosshairNoTarget.gameObject.SetActive(true);  
         }
+
+        enemyCounter.text = playerFighter.GetEnemyTeam().Count.ToString();
     }
 
     public void SetHP(float current, float max)
@@ -210,14 +213,17 @@ public class HUD : MonoBehaviour
         if (p < 0.25)
         {
             status.text = "CRITICAL";
+            status.color = percentage.color = healthbar.color = Color.red;
         }
         else if (p < 0.5)
         {
             status.text = "WARNING";
+            status.color = percentage.color = healthbar.color = Color.yellow;
         }
         else
         {
             status.text = "OPTIMAL";
+            status.color = percentage.color = healthbar.color = new Color(6f/256f, 182f/256f, 212f/256f);
         }
         
     }

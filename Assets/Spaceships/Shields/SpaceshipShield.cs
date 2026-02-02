@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class SpaceshipShield : MonoBehaviour
 {
@@ -8,24 +9,12 @@ public class SpaceshipShield : MonoBehaviour
     int currentHealth = 0;
     public HUD hud;
 
+    [SerializeField]
+    private UnityEvent onShieldDestroyed;
+
     private void Start()
     {
         currentHealth = health;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (currentHealth <= 0)
-        {
-            if (transform.parent)
-            {
-                Destroy(transform.parent.gameObject);
-            } 
-            else {
-                Destroy(gameObject);
-            }
-        }
     }
 
     public void Damage(int damage)
@@ -35,6 +24,11 @@ public class SpaceshipShield : MonoBehaviour
         if (hud)
         {
             hud.SetHP(currentHealth, health);
+        }
+
+        if (currentHealth <= 0)
+        {
+            onShieldDestroyed?.Invoke();
         }
     }
 }

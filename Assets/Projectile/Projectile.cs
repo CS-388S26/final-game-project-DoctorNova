@@ -65,9 +65,11 @@ public class Projectile : MonoBehaviour
         if (shield && !IsSameTeam(collider.gameObject))
         {
             shield.Damage(damage);
-        }
+        } 
         
-        Destroy(gameObject);
-
+        if (!IsSameTeam(collider.gameObject))
+        {
+            Destroy(gameObject);
+        }
     }
 }

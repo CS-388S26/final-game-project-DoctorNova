@@ -413,7 +413,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: eae591edab1cf1646996e48e95b6878a, type: 2}
     - target: {fileID: 919132149155446097, guid: c8c5a5babc27be44a94655394e3c9bf3, type: 3}
       propertyPath: m_Name
-      value: spaceship_6
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c8c5a5babc27be44a94655394e3c9bf3, type: 3}
       propertyPath: m_Layer
@@ -494,8 +494,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1adeb41cacc9ee4db6b285e5adaab57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 100
+  health: 5
   hud: {fileID: 0}
+  onShieldDestroyed:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8099522169391956617}
+        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
+        m_MethodName: OnShieldDestroyed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &4985207169593529961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -550,10 +565,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxSpeed: 500
   acceleration: 10
+  turnSpeed: 100
   speed: 0
   rb: {fileID: 0}
-  desiredPosition: {x: 0, y: 0, z: 0}
+  desiredDirection: {x: 0, y: 0, z: 0}
   shield: {fileID: 0}
+  useBoidMovement: 1
+  hud: {fileID: 0}
   target: {fileID: 0}
   minSpeed: 100
   gun: {fileID: 0}
