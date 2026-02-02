@@ -22,6 +22,7 @@ public class HUD : MonoBehaviour
     public GameObject continueBtn;
     public TextMeshProUGUI pauseMenuTitle;
     public TextMeshProUGUI enemyCounter;
+    public Image speedIndicator;
 
     Vector2 targetScreenCoordinate = new Vector2(0, 0);
 
@@ -202,6 +203,8 @@ public class HUD : MonoBehaviour
         }
 
         enemyCounter.text = playerFighter.GetEnemyTeam().Count.ToString();
+        speedIndicator.fillAmount = (playerFighter.speed - playerFighter.minSpeed) / (playerFighter.maxSpeed - playerFighter.minSpeed);
+
     }
 
     public void SetHP(float current, float max)

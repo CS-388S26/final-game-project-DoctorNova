@@ -14,8 +14,7 @@ public class PlayerControls : FighterAI
     public FighterAI target;
     public SpaceshipGun gun;
 
-    [SerializeField]
-    int minSpeed = 0;
+    public int minSpeed = 0;
     public float pitchSpeed = 1;
     public float rollSpeed = 1;
     public float maxTiltAngle = 20f;
