@@ -474,7 +474,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 939967657b7f6694a9e23ed07e28e18c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 3152333922911128755, guid: 58921ade8f5f70445936c31c420e21f9, type: 3}
+  projectilePrefab: {fileID: 3152333922911128755, guid: 94d99522af5d41246ac3a5ae9e03a083, type: 3}
   locations:
   - {fileID: 701583910585815932}
   - {fileID: 5233418401060941866}
@@ -565,7 +565,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxSpeed: 500
   acceleration: 10
-  turnSpeed: 100
   speed: 0
   rb: {fileID: 0}
   desiredDirection: {x: 0, y: 0, z: 0}
@@ -573,8 +572,11 @@ MonoBehaviour:
   useBoidMovement: 1
   hud: {fileID: 0}
   target: {fileID: 0}
-  minSpeed: 100
   gun: {fileID: 0}
+  minSpeed: 100
+  pitchSpeed: 1
+  rollSpeed: 1
+  maxTiltAngle: 20
 --- !u!4 &2900888270918119782 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c8c5a5babc27be44a94655394e3c9bf3, type: 3}
