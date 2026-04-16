@@ -388,7 +388,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1adeb41cacc9ee4db6b285e5adaab57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 30
+  health: 60
   hud: {fileID: 0}
   onShieldDestroyed:
     m_PersistentCalls:
@@ -444,7 +444,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c56f3f29a1c35704f8b91b94553c449d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 6
+  maxSpeed: 5
   acceleration: 1
   speed: 0
   rb: {fileID: 0}
@@ -467,7 +467,7 @@ MonoBehaviour:
   locations:
   - {fileID: 6048639236530893760}
   - {fileID: 8747158911971732912}
-  reloadTime: 0.5
+  reloadTime: 0.3
   lastTimeShot: 0
 --- !u!4 &3074682224449766090 stripped
 Transform:

@@ -24,6 +24,7 @@ public class PlayerControls : FighterAI
     const float MIN_RELATIVE_DISTANCE = 0.1f; // min realive distance in terms of screen size in which touch motion would be considered a swipe 
     float vMinDistance;
     float vMaxDistance = 300f; // After testing 300 seems to be a reasonable assumption for the longest swipe a user would do to go full speed
+    float touchBeginTime;
 
     Quaternion gyroNeutralPosition;
     bool calibrated = false;
@@ -58,6 +59,7 @@ public class PlayerControls : FighterAI
             if (touch.phase == TouchPhase.Began)
             {
                 initTouchPos = touch.position; // stores the initial touch position in the began phase
+                touchBeginTime = Time.time;
             }
 
             if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Ended)
@@ -79,6 +81,11 @@ public class PlayerControls : FighterAI
                         float decrease = 1 - Mathf.Clamp(distance / vMaxDistance, 0, 1);
                         speed = decrease * maxSpeed + minSpeed;
                     }
+                } else if (touch.phase == TouchPhase.Ended)
+                {
+                    float timeSincePress = Time.time - touchBeginTime;
+                    bool useHeavyProjectile = Input.touchPressureSupported && touch.pressure > 1.1f || timeSincePress > 0.5f;
+                    Shoot(useHeavyProjectile);
                 }
             }
         }
@@ -109,6 +116,11 @@ public class PlayerControls : FighterAI
     public new void OnShieldDestroyed()
     {
         hud.Defeat();
+    }
+
+    private float EaseInput(float x)
+    {
+        return x * x * (x < 0 ? -1.0f: 1.0f);
     }
 
     void RotateWithPCControls()
@@ -157,19 +169,19 @@ public class PlayerControls : FighterAI
 
         if (Input.GetKey(KeyCode.Q))
         {
-            Shoot();
+            Shoot(false);
         }
     }
 
-    public void Shoot()
+    public void Shoot(bool useHeavyProjectile)
     {
         if (target)
         {
-            gun.ShootAt(target);
+            gun.ShootAt(target, useHeavyProjectile);
         }
         else
         {
-            gun.Shoot();
+            gun.Shoot(useHeavyProjectile);
         }
     }
 
@@ -188,22 +200,20 @@ public class PlayerControls : FighterAI
         Vector3 euler = relative.eulerAngles;
 
         // Convert to [-180, 180]
-        if (euler.x > 180f) { 
-            euler.x -= 360f; 
+        if (euler.x > 180f)
+        {
+            euler.x -= 360f;
         }
-        if (euler.z > 180f) { 
-            euler.z -= 360f; 
+        if (euler.z > 180f)
+        {
+            euler.z -= 360f;
         }
 
-        float pitch = Mathf.Clamp(euler.x / maxTiltAngle, -1f, 1f);
+        float pitch = Mathf.Clamp(euler.x / maxTiltAngle, -1f, 1f); // * sensitivity
         float roll = Mathf.Clamp(euler.z / maxTiltAngle, -1f, 1f);
 
-        if (Mathf.Abs(pitch) < 0.05f) { 
-            pitch = 0f; 
-        }
-        if (Mathf.Abs(roll) < 0.05f) { 
-            roll = 0f; 
-        }
+        pitch = EaseInput(pitch);
+        roll = EaseInput(roll);
 
         return new Vector2(pitch, roll);
     }

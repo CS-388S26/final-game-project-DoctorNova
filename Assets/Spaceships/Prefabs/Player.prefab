@@ -475,12 +475,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 3152333922911128755, guid: 94d99522af5d41246ac3a5ae9e03a083, type: 3}
+  heavyProjectilePrefab: {fileID: 3152333922911128755, guid: 398fe2e7a8aead245ae9900a4c456cdd, type: 3}
   locations:
   - {fileID: 701583910585815932}
   - {fileID: 5233418401060941866}
   - {fileID: 7085969771935727169}
   - {fileID: 261340157991542697}
   reloadTime: 0.25
+  heavyReloadTime: 0
   lastTimeShot: 0
 --- !u!114 &6254984187757744900
 MonoBehaviour:
