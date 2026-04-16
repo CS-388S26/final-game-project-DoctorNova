@@ -2,7 +2,7 @@
 
 ## Sensors
 
-### Sensors of previous assignment
+### Sensors from previous assignment
 
 - Gyroscope to control pitch and roll of spaceship
 - Swipe up and down to increase or decrease the spaceships speed

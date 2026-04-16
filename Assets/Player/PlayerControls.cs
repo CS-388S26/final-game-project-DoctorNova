@@ -26,8 +26,12 @@ public class PlayerControls : FighterAI
     float vMaxDistance = 300f; // After testing 300 seems to be a reasonable assumption for the longest swipe a user would do to go full speed
     float touchBeginTime;
 
-    Quaternion gyroNeutralPosition;
+    Vector3 accelNeutral;   // normalized gravity direction at neutral
     bool calibrated = false;
+    Vector3 previousAcceleration;
+
+    // Optional: default neutral tilt (45° around X axis)
+    [SerializeField] float defaultNeutralAngle = 45f;
 
 
     protected new void Awake()
@@ -42,7 +46,11 @@ public class PlayerControls : FighterAI
     // Start is called before the first frame update
     void Start()
     {
-        Input.gyro.enabled = true;
+        Vector3 baseDown = Vector3.down;
+        Quaternion tilt = Quaternion.Euler(defaultNeutralAngle, 0, 0);
+        accelNeutral = (tilt * baseDown).normalized;
+        calibrated = true;
+
         gun = GetComponentInChildren<SpaceshipGun>();
 
         speed = minSpeed + (maxSpeed - minSpeed) / 2;
@@ -187,33 +195,26 @@ public class PlayerControls : FighterAI
 
     Vector2 GetTiltInput()
     {
-        Quaternion raw = Quaternion.Inverse(gyroNeutralPosition) * Input.gyro.attitude;
+        Vector3 g = Input.acceleration.normalized;
 
-        // Convert to Unity space
-        Quaternion relative = new Quaternion(
-            raw.x,
-            raw.y,
-            -raw.z,
-            -raw.w
-        );
+        g = Vector3.Lerp(previousAcceleration, g, 0.1f);
 
-        Vector3 euler = relative.eulerAngles;
+        // Relative rotation from neutral -> current
+        Quaternion delta = Quaternion.FromToRotation(accelNeutral, g);
+
+        Vector3 euler = delta.eulerAngles;
 
         // Convert to [-180, 180]
-        if (euler.x > 180f)
-        {
-            euler.x -= 360f;
-        }
-        if (euler.z > 180f)
-        {
-            euler.z -= 360f;
-        }
+        if (euler.x > 180f) euler.x -= 360f;
+        if (euler.z > 180f) euler.z -= 360f;
 
-        float pitch = Mathf.Clamp(euler.x / maxTiltAngle, -1f, 1f); // * sensitivity
-        float roll = Mathf.Clamp(euler.z / maxTiltAngle, -1f, 1f);
+        float pitch = Mathf.Clamp(euler.x / maxTiltAngle, -1f, 1f);
+        float roll = Mathf.Clamp(-euler.z / maxTiltAngle, -1f, 1f);
 
         pitch = EaseInput(pitch);
         roll = EaseInput(roll);
+
+        previousAcceleration = g;
 
         return new Vector2(pitch, roll);
     }
@@ -246,10 +247,12 @@ public class PlayerControls : FighterAI
 
     void Calibrate()
     {
-        //We sensure that we are receiving data from the sensor before calibrate
-        if (!calibrated && (Input.gyro.attitude.x != 0 || Input.gyro.attitude.y != 0 || Input.gyro.attitude.z != 0))
+        Vector3 g = Input.acceleration;
+
+        if (!calibrated && g.sqrMagnitude > 0.01f)
         {
-            gyroNeutralPosition = Input.gyro.attitude;
+            accelNeutral = g.normalized;
+            previousAcceleration = accelNeutral;
             calibrated = true;
         }
     }

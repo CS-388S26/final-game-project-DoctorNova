@@ -50,7 +50,7 @@ public class SpaceshipGun : MonoBehaviour
     {
         if (lastTimeShot < (heavyProjectile ? heavyReloadTime : reloadTime))
         {
-            return null;
+            return new List<Projectile>();
         }
 
         lastTimeShot = 0;
