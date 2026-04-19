@@ -70,21 +70,25 @@ public class SpaceshipGun : MonoBehaviour
         return projectiles;
     }
 
-    public void ShootAt(FighterAI obj, bool heavyProjectile = false)
+    public bool ShootAt(FighterAI obj, bool heavyProjectile = false)
     {
         List<Projectile> projectiles = Shoot(heavyProjectile);
         for (int i = 0; i < projectiles.Count; i++)
         {
             projectiles[i].target = obj;
         }
+
+        return projectiles.Count > 0;
     }
 
-    public void ShootAt(Vector3 position, bool heavyProjectile = false)
+    public bool ShootAt(Vector3 position, bool heavyProjectile = false)
     {
         List<Projectile> projectiles = Shoot(heavyProjectile);
         for (int i = 0; i < projectiles.Count; i++)
         {
             projectiles[i].transform.LookAt(position);
         }
+
+        return projectiles.Count > 0;
     }
 }

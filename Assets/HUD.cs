@@ -40,9 +40,9 @@ public class HUD : MonoBehaviour
         SetHP(1, 1);
     }
 
-    private bool IsPointInCircle(Vector3 point, Vector3 circleCenter, float radius)
+    private bool IsPointInCircle(Vector2 point, Vector2 circleCenter, float radius)
     {
-        Vector3 distance = point - circleCenter;
+        Vector2 distance = point - circleCenter;
         return distance.sqrMagnitude < radius * radius;
     }
 
@@ -149,7 +149,7 @@ public class HUD : MonoBehaviour
             }
 
             Vector3 screenPosition = Camera.main.WorldToScreenPoint(fighter.transform.position);
-            if (!IsPointInCircle(screenPosition, crosshairOutline.rectTransform.position, crosshairOutline.rectTransform.rect.width / 3))
+            if (!IsPointInCircle(screenPosition, crosshairOutline.rectTransform.position, crosshairOutline.rectTransform.rect.width / 2.0f - 20.0f))
             {
                 continue;
             }

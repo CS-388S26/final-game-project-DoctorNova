@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +12,8 @@ public class FighterAI : MonoBehaviour
 
     public float maxSpeed = 5.5f;
     public float acceleration = 2;
+
+    public GameObject explosion; 
 
     // speed is for debugging
     public float speed = 0;
@@ -76,5 +77,12 @@ public class FighterAI : MonoBehaviour
     public void OnShieldDestroyed()
     {
         Destroy(gameObject);
+
+        if (explosion)
+        {
+            GameObject explosionInstant = Instantiate(explosion, transform.position, Quaternion.identity);
+            AudioSource audioSource = explosionInstant.GetComponent<AudioSource>();
+            Destroy(explosionInstant, audioSource.clip.length);
+        }
     }
 }

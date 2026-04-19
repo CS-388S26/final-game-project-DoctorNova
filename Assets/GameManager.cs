@@ -46,6 +46,7 @@ public class LoadingScreen : MonoBehaviour
     {
         Time.timeScale = 1f;
         startGameButton.gameObject.SetActive(false);
+        SceneManager.LoadScene(1, LoadSceneMode.Additive);
         loadingScreen.SetActive(false);
     }
 
@@ -63,10 +64,7 @@ public class LoadingScreen : MonoBehaviour
         {
             for (int i = 0; i < spawner.count; i++)
             {
-                Vector3 spawnerPosition = spawner.transform.position;
-                Vector3 position = spawnerPosition + Random.onUnitSphere * Random.Range(0, spawner.transform.localScale.x);
-                Quaternion rotation = Random.rotation;
-                Instantiate(spawner.spaceshipPrefab, position, rotation);
+                spawner.Spawn();
                 currentlySpawned++;
 
                 loadingbar.fillAmount = currentlySpawned / totalNumerOfSpaceships;

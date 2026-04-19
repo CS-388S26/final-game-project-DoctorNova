@@ -14,6 +14,11 @@ public class PlayerControls : FighterAI
     public FighterAI target;
     public SpaceshipGun gun;
 
+    public AudioClip audioClipHeavyGun;
+    public AudioClip audioClipGun;
+    public List<AudioSource> audioSources = new List<AudioSource>();
+    int currentAudioSource = 0;
+
     public int minSpeed = 0;
     public float pitchSpeed = 1;
     public float rollSpeed = 1;
@@ -179,17 +184,31 @@ public class PlayerControls : FighterAI
         {
             Shoot(false);
         }
+        if (Input.GetKeyUp(KeyCode.E))
+        {
+            Shoot(true);
+        }
     }
 
     public void Shoot(bool useHeavyProjectile)
     {
+        bool shot = false;
+
         if (target)
         {
-            gun.ShootAt(target, useHeavyProjectile);
+            shot = gun.ShootAt(target, useHeavyProjectile);
         }
         else
         {
-            gun.Shoot(useHeavyProjectile);
+            shot = gun.Shoot(useHeavyProjectile).Count > 0;
+        }
+
+        if (shot)
+        {
+            audioSources[currentAudioSource].Stop();
+            audioSources[currentAudioSource].clip = useHeavyProjectile ? audioClipHeavyGun : audioClipGun;
+            audioSources[currentAudioSource].Play();
+            currentAudioSource = ++currentAudioSource % audioSources.Count;
         }
     }
 
