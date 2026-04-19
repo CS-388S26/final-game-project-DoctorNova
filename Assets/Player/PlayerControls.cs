@@ -105,7 +105,7 @@ public class PlayerControls : FighterAI
 
         // Wait to prevent the game from proclaiming the player the winner before the enemies even spawned
         timeBeforePlayerCanWin -= Time.fixedDeltaTime;
-        if (timeBeforePlayerCanWin < 0 && GetEnemyTeam().Count == 0)
+        if (hud && timeBeforePlayerCanWin < 0 && GetEnemyTeam().Count == 0)
         {
             hud.Won();
         }

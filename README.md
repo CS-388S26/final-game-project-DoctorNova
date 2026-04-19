@@ -12,3 +12,7 @@
 
 - Pressure sensor: touch will fire a more powerful attack if more pressure is applied. (If pressure sensor is not supported by the device than pressing down for longer will also trigger a more powerful attack)
 - Accelerometer: replaced the gyroscope for better control of the spaceship
+
+## Optimizations
+
+Images used in the HUD and Menu's are now inside an atlas.

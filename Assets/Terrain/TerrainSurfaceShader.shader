@@ -1,0 +1,70 @@
+Shader "Custom/TerrainSurfaceShader"
+{
+    Properties
+    {
+        _LightColor ("Light Color", Color) = (1,1,1,1)
+    }
+
+    SubShader
+    {
+        Tags { "RenderType"="Opaque" }
+        LOD 200
+
+        Pass
+        {
+            Tags { "LightMode"="ForwardBase" }
+
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #include "UnityCG.cginc"
+            #include "Lighting.cginc"
+
+            struct appdata
+            {
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+                float4 color  : COLOR;
+            };
+
+            struct v2f
+            {
+                float4 pos    : SV_POSITION;
+                float3 normal : TEXCOORD0;
+                float4 color  : COLOR;
+            };
+
+            v2f vert (appdata v)
+            {
+                v2f o;
+                o.pos = UnityObjectToClipPos(v.vertex);
+
+                // transform normal to world space
+                o.normal = UnityObjectToWorldNormal(v.normal);
+
+                o.color = v.color;
+                return o;
+            }
+
+            fixed4 frag (v2f i) : SV_Target
+            {
+                // normalize interpolated normal
+                float3 normal = normalize(i.normal);
+
+                // main directional light direction
+                float3 lightDir = normalize(_WorldSpaceLightPos0.xyz);
+
+                // Lambert diffuse
+                float NdotL = max(0, dot(normal, lightDir));
+
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.rgb * i.color.rgb;
+
+                // final color = vertex color * light intensity
+                fixed3 diffuse = i.color.rgb * _LightColor0.rgb * NdotL;
+
+                return fixed4(ambient + diffuse, 1.0);
+            }
+            ENDCG
+        }
+    }
+}
