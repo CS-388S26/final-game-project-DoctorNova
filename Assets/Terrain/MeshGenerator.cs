@@ -1,8 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Security.Cryptography;
+using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(MeshFilter))]
 public class MeshGenerator : MonoBehaviour
@@ -32,23 +30,41 @@ public class MeshGenerator : MonoBehaviour
     int zHalfSize;
 
     float maxHeight;
+    float inversMaxHeight;
+    MeshCollider meshCollider;
 
     // Start is called before the first frame update
     void Start()
     {
         mesh = new Mesh();
+
+        GetComponent<MeshFilter>().mesh = mesh;
+        meshCollider = GetComponent<MeshCollider>();
+
+        player = GameObject.FindGameObjectWithTag("Player");
+        
+        InitializeTerrainGeneration();
+        CreateTriangles();
+        StartCoroutine(UpdateTerrain());
+    }
+
+    private void InitializeTerrainGeneration()
+    {
+        // Preallocate memory and pre calculate values to improve performance
         vertices = new Vector3[(xSize + 1) * (zSize + 1)];
         colors = new Color[vertices.Length];
         triangles = new int[xSize * zSize * 6];
         maxHeight = Mathf.Pow(persistance, octaves - 1);
+        inversMaxHeight = 1.0f / maxHeight;
         xHalfSize = xSize / 2;
         zHalfSize = zSize / 2;
 
-        GetComponent<MeshFilter>().mesh = mesh;
+        Vector3 playerPos = player ? player.transform.position : Vector3.zero;
 
-        player = GameObject.FindGameObjectWithTag("Player");
-
-        CreateShape();
+        lastGridPosition = new Vector2(
+            Mathf.Floor(playerPos.x),
+            Mathf.Floor(playerPos.z)
+        );
     }
 
     private void UpdateMesh()
@@ -59,14 +75,34 @@ public class MeshGenerator : MonoBehaviour
         mesh.triangles = triangles;
         mesh.colors = colors;
 
+        mesh.RecalculateBounds();
         mesh.RecalculateNormals();
+
+        meshCollider.sharedMesh = mesh;
     }
 
     void OnValidate()
     {
         if (mesh)
         {
-            CreateShape();
+            InitializeTerrainGeneration();
+
+            if (Application.isPlaying)
+            {
+                Vector3 playerPos = player ? player.transform.position : Vector3.zero;
+
+                lastGridPosition = new Vector2(
+                    Mathf.Floor(playerPos.x),
+                    Mathf.Floor(playerPos.z)
+                );
+            } else
+            {
+                lastGridPosition = Vector2.zero;    
+            }
+
+            CreateVertices();
+            CreateTriangles();
+            UpdateMesh();
         }
     }
 
@@ -85,34 +121,29 @@ public class MeshGenerator : MonoBehaviour
         return Mathf.Clamp(y, 0, maxHeight);
     }
 
-    void CreateShape()
+    void CreateVertices()
     {
-        Vector3 playerPos = player ? player.transform.position : Vector3.zero;
-
-        lastGridPosition = new Vector2(
-            Mathf.Floor(playerPos.x),
-            Mathf.Floor(playerPos.z)
-        );
-
         for (int i = 0, z = -zHalfSize; z <= zHalfSize; z++)
         {
             for (int x = -xHalfSize; x <= xHalfSize; x++)
             {
+                // Keep mesh centered around player
                 float worldX = lastGridPosition.x + x;
                 float worldZ = lastGridPosition.y + z;
+                float worldY = GetHeight(worldX, worldZ);
 
-                float y = GetHeight(worldX, worldZ);
+                vertices[i] = new Vector3(worldX, worldY, worldZ);
 
-                // Keep mesh centered around player
-                vertices[i] = new Vector3(x, y, z);
-
-                float gradientValue = y / maxHeight;
+                float gradientValue = worldY * inversMaxHeight;
                 colors[i] = gradient.Evaluate(gradientValue);
 
                 i++;
             }
         }
-        
+    }
+
+    void CreateTriangles()
+    {
         int vertex = 0;
         int trianglesCounter = 0;
         for (int z = 0; z < zSize; z++)
@@ -132,47 +163,30 @@ public class MeshGenerator : MonoBehaviour
 
             vertex++;
         }
-
-        UpdateMesh();
     }
 
-    private void OnDrawGizmos()
+    IEnumerator UpdateTerrain()
     {
-        if (vertices == null)
+        while (true)
         {
-            return;
-        }
-
-        for (int i = 0; i < vertices.Length; i++)
-        {
-            Gizmos.DrawSphere(vertices[i], .01f);
-        }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (player)
-        {
-            Vector3 playerPos = player ? player.transform.position : Vector3.zero;
-
-            Vector2 snappedPlayerPos = new Vector2(
-                Mathf.Floor(playerPos.x),
-                Mathf.Floor(playerPos.z)
-            );
-
-            if (lastGridPosition.x != snappedPlayerPos.x || lastGridPosition.y != snappedPlayerPos.y)
+            if (player)
             {
-                // Move mesh with player
-                transform.position = new Vector3(
-                    player.transform.position.x,
-                    0,
-                    player.transform.position.z
+                Vector3 playerPos = player ? player.transform.position : Vector3.zero;
+
+                Vector2 snappedPlayerPos = new Vector2(
+                    Mathf.Floor(playerPos.x),
+                    Mathf.Floor(playerPos.z)
                 );
 
-                // Regenerate using new offset
-                CreateShape();
+                if (lastGridPosition.x != snappedPlayerPos.x || lastGridPosition.y != snappedPlayerPos.y)
+                {
+                    lastGridPosition = snappedPlayerPos;
+                    CreateVertices();
+                    UpdateMesh();
+                }
             }
+
+            yield return new WaitForSeconds(0.25f);
         }
     }
 }
