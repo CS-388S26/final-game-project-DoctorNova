@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3405206957410214526}
   - component: {fileID: 8889825076241675237}
   - component: {fileID: 6525981514772575394}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -112,7 +112,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3300978785798011031}
   - component: {fileID: 1777725145308191126}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: Gun4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -242,7 +242,7 @@ GameObject:
   - component: {fileID: 1095758790525047312}
   - component: {fileID: 6506721219312599010}
   - component: {fileID: 4167418912603287827}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: Shield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -345,7 +345,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1481078182001362931}
   - component: {fileID: 1153883465789674238}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: Gun1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -473,7 +473,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4824920986075798848}
   - component: {fileID: 575421560848235597}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: Gun3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -607,7 +607,7 @@ GameObject:
   - component: {fileID: 4011312930947316796}
   - component: {fileID: 5988245688513461760}
   - component: {fileID: 7818768451650614155}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -797,13 +797,13 @@ MonoBehaviour:
   acceleration: 10
   explosion: {fileID: 0}
   speed: 0
-  rb: {fileID: 0}
+  rb: {fileID: 5988245688513461760}
   desiredDirection: {x: 0, y: 0, z: 0}
-  shield: {fileID: 0}
-  useBoidMovement: 1
+  shield: {fileID: 2323272963129243881}
+  useBoidMovement: 0
   hud: {fileID: 0}
-  target: {fileID: 0}
-  gun: {fileID: 0}
+  sphereCollider: {fileID: 4167418912603287827}
+  terrain: {fileID: 0}
   audioClipHeavyGun: {fileID: 8300000, guid: 380a61624a607f042ab5e96218f37633, type: 3}
   audioClipGun: {fileID: 8300000, guid: 60a0682fbc82bd244bdae3f3445cfd17, type: 3}
   audioSources:
@@ -826,7 +826,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4595698161807640261}
   - component: {fileID: 5265346152448345754}
-  m_Layer: 7
+  m_Layer: 11
   m_Name: Gun2
   m_TagString: Untagged
   m_Icon: {fileID: 0}

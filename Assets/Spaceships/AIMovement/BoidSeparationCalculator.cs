@@ -15,9 +15,9 @@ public class SeparationCalculator
         this.collisionDistanceSq = collisionDistanceSq;
     }
 
-    public void Evaluate(FighterAI other)
+    public void Evaluate(Vector3 otherPosition)
     {
-        Vector3 diff = self.transform.position - other.transform.position;
+        Vector3 diff = self.transform.position - otherPosition;
         float distanceSq = diff.sqrMagnitude;
 
         if (distanceSq > collisionDistanceSq)

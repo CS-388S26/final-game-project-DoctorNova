@@ -8,19 +8,17 @@ public class Projectile : MonoBehaviour
     public int damage = 1;
     public GameObject shooter;
 
-    public float maxRange = 1000;
     public FighterAI target = null;
 
     Rigidbody rb;
     Vector3 startPosition;
-    float maxRangeSq;
+    float maxRangeSq = 500 * 500;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         startPosition = transform.position;
-        maxRangeSq = maxRange * maxRange;
     }
 
     // Update is called once per frame

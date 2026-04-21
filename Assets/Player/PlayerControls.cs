@@ -11,8 +11,14 @@ public class PlayerControls : FighterAI
     public HUD hud;
     float timeBeforePlayerCanWin = 10f;
 
+    [NonSerialized]
     public FighterAI target;
-    public SpaceshipGun gun;
+    SpaceshipGun gun;
+
+    public MeshGenerator terrain;
+    float maxTimeSinceCollision = 0.1f;
+    float timeSinceCollision = 0;
+    Vector3 collisionNormal = Vector3.zero;
 
     public AudioClip audioClipHeavyGun;
     public AudioClip audioClipGun;
@@ -121,9 +127,26 @@ public class PlayerControls : FighterAI
         if (!LoadingScreen.IsGameReady())
             return;
 
+        if (timeSinceCollision > 0)
+        {
+            timeSinceCollision -= Time.fixedDeltaTime;
+            rb.velocity = speed * Time.fixedDeltaTime * collisionNormal;
+            return;
+        }
 
+        float penetration = 0;
+        bool collidedWithTerrain = terrain.SphereCollision(transform.position, 10, out collisionNormal, out penetration);
 
-        rb.velocity = transform.forward.normalized * speed * Time.fixedDeltaTime;
+        if (collidedWithTerrain)
+        {
+            timeSinceCollision = maxTimeSinceCollision;
+
+            transform.position += collisionNormal * penetration;
+            rb.velocity = speed * Time.fixedDeltaTime * collisionNormal;
+        } else
+        {
+            rb.velocity = speed * Time.fixedDeltaTime * transform.forward.normalized;
+        }
     }
 
     public new void OnShieldDestroyed()

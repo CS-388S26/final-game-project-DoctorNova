@@ -15,7 +15,10 @@ public class AIMovementManager : MonoBehaviour
     public float maxConsiderationDistance = 50f;
     float maxConsiderationDistanceSq = 0;
 
+    public MeshGenerator terrain;
+
     private SeparationCalculator separationCalculator;
+    private TerrainCalculator terrainCalculator;
     private CohesionCalculator cohesionCalculator;
     private AlignmentCalculator alignmentCalculator;
     private ClosestEnemyCalculator closestEnemyCalculator;
@@ -72,6 +75,29 @@ public class AIMovementManager : MonoBehaviour
             cohesionCalculator = new CohesionCalculator(agent);
             alignmentCalculator = new AlignmentCalculator(agent, maxConsiderationDistanceSq);
             separationCalculator = new SeparationCalculator(agent, separationDistance * separationDistance);
+            terrainCalculator = new TerrainCalculator(agent, separationDistance * separationDistance);
+
+            if (terrain && terrain.IsGeneratingTerrain)
+            {
+                int gridX = (int)(agent.transform.position.x - (terrain.lastGridPosition.x - terrain.xHalfSize));
+                int gridZ = (int)(agent.transform.position.z - (terrain.lastGridPosition.y - terrain.zHalfSize));
+                int closestTerrainVertex = gridZ * (terrain.xSize + 1) + gridX;
+
+                if (closestTerrainVertex >= 0 && closestTerrainVertex < terrain.vertices.Length)
+                {
+                    for (int j = 0; j < terrain.numberOfNeighbors; j++)
+                    {
+                        int n = terrain.neighbors[closestTerrainVertex, j];
+                        if (n == -1)
+                        {
+                            break;
+                        }
+
+                        terrainCalculator.Evaluate(terrain.vertices[n]);
+                    }
+                } 
+            }
+
             foreach (var other in all)
             {
                 if (other == agent)
@@ -97,16 +123,17 @@ public class AIMovementManager : MonoBehaviour
                 }
 
                 // --- SEPARATION (all fighters) ---
-                separationCalculator.Evaluate(other);
+                separationCalculator.Evaluate(other.transform.position);
             }
 
             // --- COMBINE FORCES ---
             Vector3 closestEnemyForce = closestEnemyCalculator.CalculateResult(enemyCoefficient);
             Vector3 separationForce = separationCalculator.CalculateResult(separationCoefficient);
+            Vector3 terrainForce = terrainCalculator.CalculateResult(separationCoefficient);
             Vector3 cohesionForce = cohesionCalculator.CalculateResult(cohesionCoefficient);
             Vector3 alignmentForce = alignmentCalculator.CalculateResult(alignmentCoefficient);
             Vector3 anchorForce = (anchorPoint - agent.transform.position) / maxConsiderationDistance * anchorCoefficient;
-            Vector3 finalForce = anchorForce + cohesionForce + alignmentForce + separationForce + closestEnemyForce;
+            Vector3 finalForce = anchorForce + cohesionForce + alignmentForce + separationForce + closestEnemyForce + terrainForce;
 
             // --- APPLY TO AGENT ---
             agent.desiredDirection = finalForce.normalized;
